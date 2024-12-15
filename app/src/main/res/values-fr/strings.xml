@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">CompteurTaxi</string>
+    <string name="start_ride">Démarrer la course</string>
+    <string name="end_ride">Terminer la course</string>
+    <string name="ride_history">Historique des courses</string>
+    <string name="welcome">Bonjour</string>
+    <string name="your_car_is">Votre voiture est</string>
+    <string name="home">Accueil</string>
+    <string name="profile">Profil</string>
+    <string name="settings">Paramètres</string>
+    <string name="history">Historique</string>
+
+    <string name="duration">Durée</string>
+    <string name="fee">Tarif</string>
+    <string name="date">Date</string>
+    <string name="time">Heure</string>
+    <string name="no_qr_code">Le code QR n\'est pas disponible</string>
+    <string name="full_name">Nom complet</string>
+    <string name="car">Voiture</string>
+    <string name="license_type">Type de permis</string>
+    <string name="save_profile">Enregistrer le profil</string>
+    <string name="please_fill_all_fields">Veuillez remplir tous les champs</string>
+</resources>

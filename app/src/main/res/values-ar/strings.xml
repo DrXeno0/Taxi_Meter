@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">عداد التاكسي</string>
+    <string name="start_ride">ابدأ الرحلة</string>
+    <string name="end_ride">أنهِ الرحلة</string>
+    <string name="ride_history">تاريخ الرحلات</string>
+    <string name="welcome">مرحباً</string>
+    <string name="history">التاريخ</string>
+
+
+    <string name="your_car_is">سيارتك هي</string>
+    <string name="home">الرئيسية</string>
+    <string name="profile">الملف الشخصي</string>
+    <string name="settings">الإعدادات</string>
+    <string name="duration">المدة</string>
+    <string name="fee">الأجرة</string>
+    <string name="date">التاريخ</string>
+    <string name="time">الوقت</string>
+    <string name="no_qr_code">رمز QR غير متوفر</string>
+    <string name="full_name">الاسم الكامل</string>
+    <string name="car">السيارة</string>
+    <string name="license_type">نوع الرخصة</string>
+    <string name="save_profile">حفظ الملف الشخصي</string>
+    <string name="please_fill_all_fields">يرجى ملء جميع الحقول</string>
+</resources>

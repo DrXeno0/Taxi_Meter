@@ -71,6 +71,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.core.app.ActivityCompat
@@ -110,6 +111,11 @@ class MainActivity : AppCompatActivity() {
         notificationHelper = NotificationHelper(this)
         taxiDriverViewModel = ViewModelProvider(this).get(TaxiDriverViewModel::class.java)
         rideViewModel = ViewModelProvider(this).get(RideViewModel::class.java)
+
+        if (!NotificationHelper(this).checkNotifficationEnabled()){
+            NotificationHelper(this).enableNotifications(this)
+        }
+
 
 
         setContent {
@@ -208,9 +214,9 @@ class MainActivity : AppCompatActivity() {
     fun AppNavigator(viewModel: MainViewModel, notificationHelper: NotificationHelper, rideViewModel: RideViewModel) {
         val navController = rememberNavController()
         val items = listOf(
-            BottomNavItem("main_screen", "Home", Icons.Default.Home),
-            BottomNavItem("profile_page", "Profile", Icons.Default.Person),
-            BottomNavItem("history_page", "History", Icons.Default.DateRange)
+            BottomNavItem("main_screen", stringResource(R.string.home), Icons.Default.Home),
+            BottomNavItem("profile_page", stringResource(R.string.profile), Icons.Default.Person),
+            BottomNavItem("history_page", stringResource(R.string.history), Icons.Default.DateRange)
         )
 
         Scaffold(
@@ -430,7 +436,7 @@ class MainActivity : AppCompatActivity() {
                         ), shape = RoundedCornerShape(10.dp)
                     ) {
                         Text(
-                            text = if (isRideActive) "End Ride" else "Start Ride",
+                            text = if (isRideActive) stringResource(R.string.end_ride) else stringResource(R.string.start_ride),
                             color = Color.Black
                         )
                     }
@@ -481,19 +487,19 @@ class MainActivity : AppCompatActivity() {
 
             ) {
                 Text(
-                    "Hi ${driver.fullName} !",
+                    "${stringResource(R.string.welcome)} ${driver.fullName} !",
                     style = MaterialTheme.typography.h2,
                     color = Color.White
                 )
                 Spacer(modifier = Modifier.height(25.dp))
                 Text(
-                    "your car is ${driver.car}",
+                    "${stringResource(R.string.your_car_is)} ${driver.car}",
                     style = MaterialTheme.typography.h6,
                     color = Color.White
                 )
                 Spacer(modifier = Modifier.height(5.dp))
                 Text(
-                    "License Type: ${driver.licenseType}",
+                    "${stringResource(R.string.license_type)} : ${driver.licenseType}",
                     style = MaterialTheme.typography.h6,
                     color = Color.White
                 )
@@ -514,7 +520,7 @@ class MainActivity : AppCompatActivity() {
                 )
             } else {
 
-                Text(text = "QR Code content is empty", color = Color.Red)
+                Text(text = stringResource(R.string.no_qr_code), color = Color.Red)
             }
 
         }
@@ -630,7 +636,7 @@ class MainActivity : AppCompatActivity() {
 
                 value = fullName,
                 onValueChange = { fullName = it },
-                label = { Text("Full Name") }
+                label = { Text(stringResource(R.string.full_name)) }
                 ,
                 colors = androidx.compose.material.TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color(0xffFFD700),
@@ -647,7 +653,7 @@ class MainActivity : AppCompatActivity() {
             OutlinedTextField(
                 value = car,
                 onValueChange = { car = it },
-                label = { Text("Car") }
+                label = { Text(stringResource(R.string.car)) }
                 ,
                 colors = androidx.compose.material.TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color(0xffFFD700),
@@ -662,7 +668,7 @@ class MainActivity : AppCompatActivity() {
             OutlinedTextField(
                 value = licenseType,
                 onValueChange = { licenseType = it },
-                label = { Text("License Type") }
+                label = { Text(stringResource(R.string.license_type)) }
                 ,
                 colors = androidx.compose.material.TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color(0xffFFD700),
@@ -694,7 +700,7 @@ class MainActivity : AppCompatActivity() {
                     )
                     viewModel.saveDriver(driver)
                 }) {
-                Text("Save Profile")
+                Text(stringResource(R.string.save_profile))
             }
         }
     }
@@ -709,7 +715,7 @@ class MainActivity : AppCompatActivity() {
 
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             Text(
-                text = "Ride History",
+                text = stringResource(R.string.ride_history),
                 style = MaterialTheme.typography.h4,
                 modifier = Modifier.padding(bottom = 16.dp, top = 16.dp),
                 color = Color.White
@@ -733,10 +739,10 @@ class MainActivity : AppCompatActivity() {
                 .padding(16.dp)
         ) {
             Column {
-                Text(text = "Date: ${ride.date}", style = MaterialTheme.typography.body1)
-                Text(text = "Time: ${ride.time}", style = MaterialTheme.typography.body2)
-                Text(text = "Duration: ${ride.duration}", style = MaterialTheme.typography.body2)
-                Text(text = "Fee: ${String.format("%.2f DH", ride.fee)}", style = MaterialTheme.typography.body1)
+                Text(text = "${stringResource(R.string.date)}: ${ride.date}", style = MaterialTheme.typography.body1)
+                Text(text = "${stringResource(R.string.time)}: ${ride.time}", style = MaterialTheme.typography.body2)
+                Text(text = "${stringResource(R.string.duration)}: ${ride.duration}", style = MaterialTheme.typography.body2)
+                Text(text = "${stringResource(R.string.fee)}: ${String.format("%.2f DH", ride.fee)}", style = MaterialTheme.typography.body1)
             }
         }
     }

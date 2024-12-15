@@ -1,11 +1,13 @@
 package com.nocturnal.taximeter.utils
 
+import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.nocturnal.taximeter.R
+import pub.devrel.easypermissions.EasyPermissions
 
 
 class NotificationHelper(private val context: Context) {
@@ -22,6 +24,13 @@ class NotificationHelper(private val context: Context) {
             )
             notificationManager.createNotificationChannel(channel)
         }
+    }
+    fun checkNotifficationEnabled(): Boolean {
+        return notificationManager.areNotificationsEnabled()
+    }
+
+    fun enableNotifications(activity: Activity) {
+        EasyPermissions.requestPermissions(activity, "Enable notifications", 0, android.Manifest.permission.POST_NOTIFICATIONS)
     }
 
     fun sendFareNotification(fare: Double, distance: Double, time: Long) {
