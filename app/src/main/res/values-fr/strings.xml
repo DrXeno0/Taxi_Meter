@@ -20,4 +20,9 @@
     <string name="license_type">Type de permis</string>
     <string name="save_profile">Enregistrer le profil</string>
     <string name="please_fill_all_fields">Veuillez remplir tous les champs</string>
+    <string name="km">Km</string>
+    <string name="dh">Dh</string>
+    <string name="mins">mins</string>
+    <string name="language">Sélectionnez votre langue</string>
+
 </resources>

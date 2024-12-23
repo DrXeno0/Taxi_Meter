@@ -2,9 +2,11 @@ package com.nocturnal.taximeter
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler
@@ -71,6 +73,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -112,7 +115,7 @@ class MainActivity : AppCompatActivity() {
         taxiDriverViewModel = ViewModelProvider(this).get(TaxiDriverViewModel::class.java)
         rideViewModel = ViewModelProvider(this).get(RideViewModel::class.java)
 
-        if (!NotificationHelper(this).checkNotifficationEnabled()){
+        if (!NotificationHelper(this).checkNotifficationEnabled()) {
             NotificationHelper(this).enableNotifications(this)
         }
 
@@ -211,12 +214,25 @@ class MainActivity : AppCompatActivity() {
 
 
     @Composable
-    fun AppNavigator(viewModel: MainViewModel, notificationHelper: NotificationHelper, rideViewModel: RideViewModel) {
+    fun AppNavigator(
+        viewModel: MainViewModel,
+        notificationHelper: NotificationHelper,
+        rideViewModel: RideViewModel
+    ) {
         val navController = rememberNavController()
         val items = listOf(
             BottomNavItem("main_screen", stringResource(R.string.home), Icons.Default.Home),
             BottomNavItem("profile_page", stringResource(R.string.profile), Icons.Default.Person),
-            BottomNavItem("history_page", stringResource(R.string.history), Icons.Default.DateRange)
+            BottomNavItem(
+                "history_page",
+                stringResource(R.string.history),
+                Icons.Default.DateRange
+            ),
+            BottomNavItem(
+                "settings_page",
+                stringResource(R.string.settings),
+                Icons.Default.Settings
+            )
         )
 
         Scaffold(
@@ -242,7 +258,7 @@ class MainActivity : AppCompatActivity() {
 
                 ) {
                     composable("main_screen") {
-                        MainScreen(navController, viewModel, notificationHelper,  rideViewModel )
+                        MainScreen(navController, viewModel, notificationHelper, rideViewModel)
                     }
                     composable("profile_page") {
                         val driver = taxiDriverViewModel.driver.observeAsState().value
@@ -257,6 +273,9 @@ class MainActivity : AppCompatActivity() {
                     composable("History_page") {
                         HistoryScreen(rideViewModel)
                     }
+                    composable("settings_page") {
+                        SettingsPage()
+                    }
                 }
             }
         }
@@ -270,6 +289,9 @@ class MainActivity : AppCompatActivity() {
         rideViewModel: RideViewModel
     ) {
 
+
+        val configuration = LocalConfiguration.current
+        val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         val context = LocalContext.current
         var isRideActive by remember { mutableStateOf(false) }
         val rideData by viewModel.rideData.observeAsState()
@@ -357,13 +379,14 @@ class MainActivity : AppCompatActivity() {
                 Column(verticalArrangement = Arrangement.Center) {
 
                     if (hasLocationPermission) {
-                    GoogleMap(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(1f),
-                        cameraPositionState = cameraPositionState,
-                        properties = mapProperties
-                    ) }else{
+                        GoogleMap(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(1f),
+                            cameraPositionState = cameraPositionState,
+                            properties = mapProperties
+                        )
+                    } else {
                         PermissionsHelper.requestLocationPermission(this@MainActivity)
                         Log.d("MainScreen", "Permission not granted")
 
@@ -377,19 +400,19 @@ class MainActivity : AppCompatActivity() {
                             "${
                                 rideData?.distance?.let {
                                     String.format(
-                                        "%.2f km",
+                                        "%.2f ${stringResource(R.string.km)}",
                                         it
                                     )
                                 } ?: "N/A"
                             }")
                         Spacer(Modifier.height(10.dp))
-                        InformationComposable("${rideData?.timeElapsed?.let { "$it min" } ?: "N/A"}")
+                        InformationComposable("${rideData?.timeElapsed?.let { "$it ${stringResource(R.string.mins)}" } ?: "N/A"}")
                         Spacer(Modifier.height(10.dp))
                         InformationComposable(
                             "${
                                 rideData?.totalFare?.let {
                                     String.format(
-                                        "%.2f DH",
+                                        "%.2f ${stringResource(R.string.dh)}",
                                         it
                                     )
                                 } ?: "N/A"
@@ -411,11 +434,14 @@ class MainActivity : AppCompatActivity() {
                             } else {
                                 isRideActive = false
                                 viewModel.endRide()
-                                val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(
-                                    Date()
-                                )
-                                val currentTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
-                                val duration = "${rideData?.timeElapsed} mins"  // Calculate ride duration
+                                val currentDate =
+                                    SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(
+                                        Date()
+                                    )
+                                val currentTime =
+                                    SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+                                val duration =
+                                    "${rideData?.timeElapsed} mins"  // Calculate ride duration
                                 val fee = rideData?.totalFare ?: 0.0
 
                                 rideViewModel.saveRide(currentDate, currentTime, duration, fee)
@@ -436,7 +462,9 @@ class MainActivity : AppCompatActivity() {
                         ), shape = RoundedCornerShape(10.dp)
                     ) {
                         Text(
-                            text = if (isRideActive) stringResource(R.string.end_ride) else stringResource(R.string.start_ride),
+                            text = if (isRideActive) stringResource(R.string.end_ride) else stringResource(
+                                R.string.start_ride
+                            ),
                             color = Color.Black
                         )
                     }
@@ -585,32 +613,91 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @Preview(showBackground = true)
     @Composable
     fun SettingsPage() {
-        Box(
-            Modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        0.1f to Color(0xff343A40),
-                        1f to Color(0xff1e1e1e)
-                    )
-                ),
-            contentAlignment = Alignment.Center
+        val expanded = remember { mutableStateOf(false) }
+
+        val context = LocalContext.current
+        val languages = listOf("English", "Arabic", "French")
+        val selectedLanguage = remember { mutableStateOf("English") }
+
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Settings Page",
-                color = Color.White,
-                style = TextStyle(
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                text = stringResource(id = R.string.settings),
+                Modifier.padding(top = 10.dp),
+                style = MaterialTheme.typography.h5
             )
+
+            Spacer(modifier = Modifier.height(20.dp))
+            Row(
+
+
+            ) {
+                Text(
+                    text = "${stringResource(R.string.language)}: ${selectedLanguage.value} ",
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .clickable { expanded.value = true }
+                )
+                DropdownMenu(
+                    expanded = expanded.value ,
+                    onDismissRequest = {
+
+                        expanded.value = false
+
+                        saveLanguagePreference(context, selectedLanguage.value)
+                    },
+                    modifier = Modifier.background(Color(0xffe1e1e1))
+                ) {
+                    languages.forEach { language ->
+                        DropdownMenuItem(onClick = {
+                            selectedLanguage.value = language
+                            changeLanguage(context, language)
+                            expanded.value = false
+                        }) {
+                            Text(text = language, color = Color.White)
+                        }
+                    }
+                }
+            }
         }
 
 
     }
 
+    fun saveLanguagePreference(context: Context, language: String) {
+        val sharedPreferences = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putString("language", language)
+            apply()
+        }
+    }
+
+    fun changeLanguage(context: Context, language: String) {
+        val locale = when (language) {
+            "Arabic" -> Locale("ar")
+            "French" -> Locale("fr")
+            else -> Locale("en")
+        }
+
+        Locale.setDefault(locale)
+        val config = context.resources.configuration
+        config.setLocale(locale)
+        context.resources.updateConfiguration(config, context.resources.displayMetrics)
+
+        if (context is Activity) {
+            context.recreate()
+        }
+    }
+
+    fun loadLanguagePreference(context: Context): String {
+        val sharedPreferences = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+        return sharedPreferences.getString("language", "English") ?: "English"
+    }
 
     @Composable
     fun ProfileInputScreen(viewModel: TaxiDriverViewModel) {
@@ -636,8 +723,7 @@ class MainActivity : AppCompatActivity() {
 
                 value = fullName,
                 onValueChange = { fullName = it },
-                label = { Text(stringResource(R.string.full_name)) }
-                ,
+                label = { Text(stringResource(R.string.full_name)) },
                 colors = androidx.compose.material.TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color(0xffFFD700),
                     unfocusedBorderColor = Color.Black,
@@ -645,16 +731,14 @@ class MainActivity : AppCompatActivity() {
                     focusedLabelColor = Color(0xffFFD700),
                     cursorColor = Color(0xffFFD700),
                     unfocusedLabelColor = Color.Gray
-                )
-                ,
+                ),
                 maxLines = 1,
 
-            )
+                )
             OutlinedTextField(
                 value = car,
                 onValueChange = { car = it },
-                label = { Text(stringResource(R.string.car)) }
-                ,
+                label = { Text(stringResource(R.string.car)) },
                 colors = androidx.compose.material.TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color(0xffFFD700),
                     unfocusedBorderColor = Color.Black,
@@ -662,14 +746,13 @@ class MainActivity : AppCompatActivity() {
                     focusedLabelColor = Color(0xffFFD700),
                     cursorColor = Color(0xffFFD700),
                     unfocusedLabelColor = Color.Gray
-                )
-                       , maxLines = 1,
+                ),
+                maxLines = 1,
             )
             OutlinedTextField(
                 value = licenseType,
                 onValueChange = { licenseType = it },
-                label = { Text(stringResource(R.string.license_type)) }
-                ,
+                label = { Text(stringResource(R.string.license_type)) },
                 colors = androidx.compose.material.TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color(0xffFFD700),
                     unfocusedBorderColor = Color.Black,
@@ -677,8 +760,8 @@ class MainActivity : AppCompatActivity() {
                     focusedLabelColor = Color(0xffFFD700),
                     cursorColor = Color(0xffFFD700),
                     unfocusedLabelColor = Color.Gray
-                )
-                ,maxLines = 1,
+                ),
+                maxLines = 1,
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -713,7 +796,11 @@ class MainActivity : AppCompatActivity() {
             rideViewModel.fetchRideHistory()
         }
 
-        Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
             Text(
                 text = stringResource(R.string.ride_history),
                 style = MaterialTheme.typography.h4,
@@ -739,14 +826,29 @@ class MainActivity : AppCompatActivity() {
                 .padding(16.dp)
         ) {
             Column {
-                Text(text = "${stringResource(R.string.date)}: ${ride.date}", style = MaterialTheme.typography.body1)
-                Text(text = "${stringResource(R.string.time)}: ${ride.time}", style = MaterialTheme.typography.body2)
-                Text(text = "${stringResource(R.string.duration)}: ${ride.duration}", style = MaterialTheme.typography.body2)
-                Text(text = "${stringResource(R.string.fee)}: ${String.format("%.2f DH", ride.fee)}", style = MaterialTheme.typography.body1)
+                Text(
+                    text = "${stringResource(R.string.date)}: ${ride.date}",
+                    style = MaterialTheme.typography.body1
+                )
+                Text(
+                    text = "${stringResource(R.string.time)}: ${ride.time}",
+                    style = MaterialTheme.typography.body2
+                )
+                Text(
+                    text = "${stringResource(R.string.duration)}: ${ride.duration}",
+                    style = MaterialTheme.typography.body2
+                )
+                Text(
+                    text = "${stringResource(R.string.fee)}: ${
+                        String.format(
+                            "%.2f DH",
+                            ride.fee
+                        )
+                    }", style = MaterialTheme.typography.body1
+                )
             }
         }
     }
-
 
 
 }

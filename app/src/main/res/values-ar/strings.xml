@@ -21,4 +21,8 @@
     <string name="license_type">نوع الرخصة</string>
     <string name="save_profile">حفظ الملف الشخصي</string>
     <string name="please_fill_all_fields">يرجى ملء جميع الحقول</string>
+    <string name="km">كم</string>
+    <string name="dh">د.م</string>
+    <string name="mins">دقائق</string>
+    <string name="language">اختر لغتك</string>
 </resources>

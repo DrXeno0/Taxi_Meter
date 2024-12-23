@@ -82,7 +82,7 @@ class MainViewModel(context: Context) : ViewModel() {
     }
 
     private fun calculateDistance(start: Location, end: Location): Double {
-        val earthRadius = 6371 // Kilometers
+        val earthRadius = 6371
         val dLat = Math.toRadians(end.latitude - start.latitude)
         val dLon = Math.toRadians(end.longitude - start.longitude)
 
@@ -91,6 +91,6 @@ class MainViewModel(context: Context) : ViewModel() {
                 sin(dLon / 2) * sin(dLon / 2)
         val c = 2 * atan2(sqrt(a), sqrt(1 - a))
 
-        return earthRadius * c // Distance in kilometers
+        return earthRadius * c
     }
 }

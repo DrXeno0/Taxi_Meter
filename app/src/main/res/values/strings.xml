@@ -19,4 +19,8 @@
     <string name="license_type">License Type</string>
     <string name="save_profile">Save Profile</string>
     <string name="please_fill_all_fields">Please fill all fields</string>
+    <string name="km">Km</string>
+    <string name="dh">Dh</string>
+    <string name="mins">mins</string>
+    <string name="language">select your language</string>
 </resources>
